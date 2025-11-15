@@ -1,14 +1,16 @@
 """
-This script runs the FlaskWebProject application using a development server.
+This script exposes the FlaskWebProject 'app' object
+so Azure App Service can load it using Gunicorn.
+This file should NOT use ssl_context or debug server settings.
 """
 
-from os import environ
 from FlaskWebProject import app
 
-if __name__ == '__main__':
-    HOST = environ.get('SERVER_HOST', 'localhost')
-    try:
-        PORT = int(environ.get('SERVER_PORT', '5555'))
-    except ValueError:
-        PORT = 5555
-    app.run(HOST, PORT, ssl_context='adhoc')
+# Azure uses Gunicorn to run the app, so we only need to expose `app`
+# The block below only runs when using local development (python application.py)
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=5555,
+        debug=True
+    )
